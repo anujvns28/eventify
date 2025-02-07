@@ -7,6 +7,7 @@ import Events from "./pages/Events";
 import Contact from "./pages/Contact";
 import About from "./pages/About";
 import EventDetails from "./pages/EventDetails";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -18,7 +19,8 @@ function App() {
         <Route path="/events" element={<Events />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />
-        <Route path="/eventdetails" element={<EventDetails />} />
+        <Route path="/eventdetails/:eventId" element={<EventDetails />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </BrowserRouter>
   );

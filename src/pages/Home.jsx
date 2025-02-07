@@ -15,6 +15,7 @@ import ReactStars from "react-stars";
 import { FaRegClock, FaCalendarAlt, FaMapMarkerAlt } from "react-icons/fa";
 import EventCard from "../components/core/EventCard";
 import EventCreationForm from "../components/core/EventCreationForm";
+import useSocketConnection from "../hook/socket";
 
 const Home = () => {
   const [openEventCreationForm, setOpenEventCreationForm] = useState(false);
@@ -105,6 +106,8 @@ const Home = () => {
       location: "New York City Tech Hub",
     },
   ];
+
+  const socket = useSocketConnection();
 
   return (
     <div className="bg-slate-300 -z-10">

@@ -3,6 +3,10 @@ import { NavLink, useLocation } from "react-router-dom";
 
 const Navbar = () => {
   const location = useLocation();
+  const user = localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user"))
+    : null;
+  console.log(user, "this is user ");
 
   return (
     <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 shadow-lg">
@@ -22,7 +26,6 @@ const Navbar = () => {
             { path: "/events", label: "Events" },
             { path: "/about", label: "About" },
             { path: "/contact", label: "Contact" },
-            { path: "/login", label: "Login" },
           ].map((link) => (
             <NavLink
               key={link.path}
@@ -36,6 +39,19 @@ const Navbar = () => {
               {link.label}
             </NavLink>
           ))}
+
+          <div className="text-white hover:text-gray-300">
+            {!user ? (
+              <NavLink to={"/login"}>Login</NavLink>
+            ) : (
+              <NavLink to={"/profile"}>
+                <img
+                  src={user.profileImage}
+                  className="rounded-full h-[40px] w-[40px]"
+                />
+              </NavLink>
+            )}
+          </div>
         </div>
       </div>
     </div>
