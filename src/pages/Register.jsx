@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { signup } from "../service/operation/auth";
 
-const Signup = () => {
+const Register = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -32,7 +32,7 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(""); // Reset error
+    setError(""); 
 
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match!");
@@ -167,4 +167,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Register;
