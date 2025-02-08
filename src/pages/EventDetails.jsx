@@ -10,6 +10,11 @@ const EventDetails = () => {
   const params = useParams();
   const [eventData, setEventData] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [loginMessage, setLoginMessage] = useState(false); // To track if we should show the login message
+
+  const user = localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user"))
+    : null;
 
   const fetchEventData = async () => {
     const result = await getEvent(params.eventId);
@@ -22,6 +27,15 @@ const EventDetails = () => {
   useEffect(() => {
     fetchEventData();
   }, [showModal]);
+
+  const handleRegisterClick = () => {
+    if (!user) {
+      setLoginMessage(true); // Show the login message if user is not logged in
+      setTimeout(() => setLoginMessage(false), 5000); // Hide after 5 seconds
+    } else {
+      setShowModal(true); // If user is logged in, show the modal
+    }
+  };
 
   return (
     <div>
@@ -89,12 +103,19 @@ const EventDetails = () => {
             {/* Register Now Button */}
             <div className="mt-6 text-center">
               <button
-                onClick={() => setShowModal(true)}
+                onClick={handleRegisterClick} // Click handler for register button
                 className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300"
               >
                 Register Now
               </button>
             </div>
+
+            {/* Display login message if the user is not logged in */}
+            {loginMessage && (
+              <div className="mt-4 text-center text-red-500 font-semibold">
+                Please log in first to register for this event.
+              </div>
+            )}
           </div>
         ) : (
           <div className="text-white font-semibold">Loading...</div>

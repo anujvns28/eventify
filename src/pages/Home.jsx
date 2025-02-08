@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/common/Navbar";
 import Footer from "../components/common/Footer";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
@@ -16,9 +16,11 @@ import { FaRegClock, FaCalendarAlt, FaMapMarkerAlt } from "react-icons/fa";
 import EventCard from "../components/core/EventCard";
 import EventCreationForm from "../components/core/EventCreationForm";
 import useSocketConnection from "../hook/socket";
+import { fetchTopFiveEvent } from "../service/operation/event";
 
 const Home = () => {
   const [openEventCreationForm, setOpenEventCreationForm] = useState(false);
+  const [events, setEvents] = useState([]);
 
   const organizers = [
     {
@@ -44,70 +46,79 @@ const Home = () => {
     },
   ];
 
-  const events = [
-    {
-      organizerImage:
-        "https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg",
-      eventImage:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT34uyl3kTD_iX6L9o9d5dFsqFTN3l7YJ8gpg&s",
-      eventName: "Tech Conference 2025",
-      description:
-        "An annual gathering of tech enthusiasts and industry leaders discussing the latest trends.",
-      date: "2025-03-15",
-      time: "10:00 AM - 4:00 PM",
-      location: "San Francisco Convention ",
-    },
-    {
-      organizerImage:
-        "https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg",
-      eventImage:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT34uyl3kTD_iX6L9o9d5dFsqFTN3l7YJ8gpg&s",
-      eventName: "Music Festival 2025",
-      description:
-        "A weekend filled with live music performances from top artists worldwide.",
-      date: "2025-06-10",
-      time: "2:00 PM - 11:00 PM",
-      location: "Los Angeles Grand Park",
-    },
-    {
-      organizerImage:
-        "https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg",
-      eventImage:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT34uyl3kTD_iX6L9o9d5dFsqFTN3l7YJ8gpg&s",
-      eventName: "Startup Pitch Night",
-      description:
-        "Entrepreneurs showcase their startups to investors and industry experts worldwide.",
-      date: "2025-04-05",
-      time: "6:00 PM - 9:00 PM",
-      location: "New York City Tech Hub",
-    },
-    {
-      organizerImage:
-        "https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg",
-      eventImage:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT34uyl3kTD_iX6L9o9d5dFsqFTN3l7YJ8gpg&s",
-      eventName: "Startup Pitch Night",
-      description:
-        "Entrepreneurs showcase their startups to investors and industry experts worldwide.",
-      date: "2025-04-05",
-      time: "6:00 PM - 9:00 PM",
-      location: "New York City Tech Hub",
-    },
-    {
-      organizerImage:
-        "https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg",
-      eventImage:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT34uyl3kTD_iX6L9o9d5dFsqFTN3l7YJ8gpg&s",
-      eventName: "Startup Pitch Night",
-      description:
-        "Entrepreneurs showcase their startups to investors and industry experts worldwide.",
-      date: "2025-04-05",
-      time: "6:00 PM - 9:00 PM",
-      location: "New York City Tech Hub",
-    },
-  ];
+  // const events = [
+  //   {
+  //     organizerImage:
+  //       "https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg",
+  //     eventImage:
+  //       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT34uyl3kTD_iX6L9o9d5dFsqFTN3l7YJ8gpg&s",
+  //     eventName: "Tech Conference 2025",
+  //     description:
+  //       "An annual gathering of tech enthusiasts and industry leaders discussing the latest trends.",
+  //     date: "2025-03-15",
+  //     time: "10:00 AM - 4:00 PM",
+  //     location: "San Francisco Convention ",
+  //   },
+  //   {
+  //     organizerImage:
+  //       "https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg",
+  //     eventImage:
+  //       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT34uyl3kTD_iX6L9o9d5dFsqFTN3l7YJ8gpg&s",
+  //     eventName: "Music Festival 2025",
+  //     description:
+  //       "A weekend filled with live music performances from top artists worldwide.",
+  //     date: "2025-06-10",
+  //     time: "2:00 PM - 11:00 PM",
+  //     location: "Los Angeles Grand Park",
+  //   },
+  //   {
+  //     organizerImage:
+  //       "https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg",
+  //     eventImage:
+  //       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT34uyl3kTD_iX6L9o9d5dFsqFTN3l7YJ8gpg&s",
+  //     eventName: "Startup Pitch Night",
+  //     description:
+  //       "Entrepreneurs showcase their startups to investors and industry experts worldwide.",
+  //     date: "2025-04-05",
+  //     time: "6:00 PM - 9:00 PM",
+  //     location: "New York City Tech Hub",
+  //   },
+  //   {
+  //     organizerImage:
+  //       "https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg",
+  //     eventImage:
+  //       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT34uyl3kTD_iX6L9o9d5dFsqFTN3l7YJ8gpg&s",
+  //     eventName: "Startup Pitch Night",
+  //     description:
+  //       "Entrepreneurs showcase their startups to investors and industry experts worldwide.",
+  //     date: "2025-04-05",
+  //     time: "6:00 PM - 9:00 PM",
+  //     location: "New York City Tech Hub",
+  //   },
+  //   {
+  //     organizerImage:
+  //       "https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg",
+  //     eventImage:
+  //       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT34uyl3kTD_iX6L9o9d5dFsqFTN3l7YJ8gpg&s",
+  //     eventName: "Startup Pitch Night",
+  //     description:
+  //       "Entrepreneurs showcase their startups to investors and industry experts worldwide.",
+  //     date: "2025-04-05",
+  //     time: "6:00 PM - 9:00 PM",
+  //     location: "New York City Tech Hub",
+  //   },
+  // ];
 
-  const socket = useSocketConnection();
+  const fetchEvents = async () => {
+    const result = await fetchTopFiveEvent();
+
+    if (result) {
+      setEvents(result);
+    }
+  };
+  useEffect(() => {
+    fetchEvents();
+  }, []);
 
   return (
     <div className="bg-slate-300 -z-10">
@@ -124,67 +135,66 @@ const Home = () => {
           <SwiperSlide>
             <img
               src={slid1}
-              className="w-full h-[600px] object-cover rounded-lg"
+              className="w-full h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] object-cover rounded-lg"
               alt="Event 1"
             />
           </SwiperSlide>
           <SwiperSlide>
             <img
               src={slid2}
-              className="w-full h-[600px] object-cover rounded-lg"
+              className="w-full h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] object-cover rounded-lg"
               alt="Event 2"
             />
           </SwiperSlide>
           <SwiperSlide>
             <img
               src={slid3}
-              className="w-full h-[600px] object-cover rounded-lg"
+              className="w-full h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] object-cover rounded-lg"
               alt="Event 3"
             />
           </SwiperSlide>
           <SwiperSlide>
             <img
               src={slid4}
-              className="w-full h-[600px] object-cover rounded-lg"
+              className="w-full h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] object-cover rounded-lg"
               alt="Event 4"
             />
           </SwiperSlide>
         </Swiper>
       </div>
 
-      <div className="w-full p-20 text-black flex items-center justify-center">
-        <div className="text-center px-6 md:px-12">
+      <div className="w-full p-6 sm:p-10 md:p-20 text-black flex items-center justify-center">
+        <div className="text-center px-4 sm:px-6 md:px-12">
           {/* Hero Title */}
-          <h1 className="text-4xl md:text-5xl font-extrabold leading-tight mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight mb-4">
             Manage Your Events Like a Pro
           </h1>
 
           {/* Hero Subtitle */}
-          <p className="text-lg md:text-xl mb-8">
+          <p className="text-base sm:text-lg md:text-xl mb-8">
             Create, organize, and track your events effortlessly with our
             all-in-one platform. Whether you're hosting a small meeting or a
             large conference, we've got you covered.
           </p>
 
           {/* Call-to-Action Button */}
-          <button className="bg-yellow-500 text-gray-800 text-lg font-semibold py-3 px-8 rounded-md shadow-lg hover:bg-yellow-600 transition-all">
+          <button className="bg-yellow-500 text-gray-800 text-base sm:text-lg font-semibold py-3 px-8 rounded-md shadow-lg hover:bg-yellow-600 transition-all">
             Join Now
           </button>
 
           {/* Icon for additional style */}
           <div className="mt-6">
-            <FaCalendarAlt className="text-6xl mx-auto animate-bounce" />
+            <FaCalendarAlt className="text-4xl sm:text-5xl md:text-6xl mx-auto animate-bounce" />
           </div>
         </div>
       </div>
 
-      {/* Organize Event Section */}
-      <div className="flex w-full justify-between px-20 text-3xl font-semibold py-4 -z-10">
-        <p>Organize Event</p>
-        <p>Upcoming top five Events</p>
+      <div className="flex w-full justify-between px-4 sm:px-8 lg:px-20 text-xl sm:text-2xl lg:text-3xl font-semibold py-4">
+        <p className="hidden sm:block">Organize Event</p>
+        <p className="text-center sm:text-left">Upcoming top five Events</p>
       </div>
 
-      <div className="relative mb-5 w-full flex flex-row gap-9 items-center justify-center mt-4  px-20">
+      <div className=" mb-5 w-full flex flex-row gap-9 items-center justify-center mt-4  px-20">
         {/* Event Creation Card */}
         <div className="bg-white shadow-xl rounded-lg w-80 h-auto flex flex-col justify-between border border-gray-200 hover:shadow-2xl transition-all">
           <div className="">

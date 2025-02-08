@@ -1,36 +1,32 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-// Create socket instance
-const socket = io("http://localhost:5000", {
-  autoConnect: false, 
+// Connect to backend socket server
+const socket = io("https://eventserver-g3cn.onrender.com", {
   reconnection: true,
 });
 
 const useSocketConnection = () => {
-  
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-      // Listen for socket connection event
-      socket.on("connect", () => {
-        console.log("Socket connected:", socket.id); 
-      });
+    socket.on("connect", () => {
+      console.log("Connected to socket server:", socket.id);
+      setIsConnected(true);
+    });
 
-      if (!socket.connected) {
-        socket.connect(); 
-      }
+    socket.on("disconnect", () => {
+      console.log("Disconnected from socket server");
+      setIsConnected(false);
+    });
 
-      // Cleanup on unmount or user change
-      return () => {
-        if (socket.connected) {
-          console.log("Disconnecting socket...");
-          socket.disconnect(); // Disconnect when the component unmounts
-        }
-      };
-    
+    return () => {
+      socket.off("connect");
+      socket.off("disconnect");
+    };
   }, []);
 
-  return socket;
+  return { socket, isConnected };
 };
 
 export default useSocketConnection;

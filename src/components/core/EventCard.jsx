@@ -77,12 +77,15 @@ const EventCard = ({ event }) => {
             </div>
           </div>
 
-          {/* Participants */}
+          {/* Participants (Highlighted) */}
           <div className="flex items-center space-x-2">
             <FaUsers className="text-blue-500" />
             <div className="flex flex-row gap-2">
               <p className="font-semibold text-gray-700">Participants</p>
-              <p className="text-gray-600">{event.participants?.length || 0}</p>
+              <p className="text-gray-600 text-xl font-bold">
+                {/* Make the participants count bigger and bold */}
+                {event.participants?.length || 0}
+              </p>
             </div>
           </div>
         </div>

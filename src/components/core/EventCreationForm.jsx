@@ -85,22 +85,7 @@ const EventCreationForm = ({ setOpenEventCreationForm, isEdit, eventData }) => {
     e.preventDefault();
     setLoading(true);
 
-    const isUnchanged =
-      formData.eventName === eventData.title &&
-      formData.description === eventData.description &&
-      formData.date === eventData.date.split("T")[0] &&
-      formData.time === eventData.time &&
-      formData.isOnline === eventData.isOnline &&
-      formData.location === (eventData.location || "") &&
-      formData.googleMeetLink === eventData.googleMeetLink &&
-      formData.category === eventData.category &&
-      (formData.eventImage === "" || formData.eventImage === eventData.image);
-
-    if (isUnchanged) {
-      alert("No changes detected. Please modify the event before updating.");
-      setLoading(false);
-      return;
-    }
+    
 
     const data = { ...formData, token: token };
 
@@ -108,10 +93,26 @@ const EventCreationForm = ({ setOpenEventCreationForm, isEdit, eventData }) => {
       data.eventImage = eventData.image;
     }
 
-    console.log("Event Data Submitted: ", data);
+    // console.log("Event Data Submitted: ", data);
 
     if (isEdit) {
       // Update event if in edit mode
+      const isUnchanged =
+        formData.eventName === eventData.title &&
+        formData.description === eventData.description &&
+        formData.date === eventData.date.split("T")[0] &&
+        formData.time === eventData.time &&
+        formData.isOnline === eventData.isOnline &&
+        formData.location === (eventData.location || "") &&
+        formData.googleMeetLink === eventData.googleMeetLink &&
+        formData.category === eventData.category &&
+        (formData.eventImage === "" || formData.eventImage === eventData.image);
+
+      if (isUnchanged) {
+        alert("No changes detected. Please modify the event before updating.");
+        setLoading(false);
+        return;
+      }
 
       await updateEvent(eventData._id, data);
     } else {
