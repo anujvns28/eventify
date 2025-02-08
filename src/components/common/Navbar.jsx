@@ -14,7 +14,7 @@ const Navbar = () => {
   return (
     <div>
       {/* Navbar */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 shadow-lg fixed top-0 left-0 w-full z-50">
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 shadow-lg  w-full z-50">
         <div className="container mx-auto flex justify-between items-center px-4 sm:px-8 lg:px-16">
           {" "}
           {/* Adjusted padding for small screens */}
